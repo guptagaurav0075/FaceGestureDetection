@@ -9,7 +9,7 @@ OUTPUT_DATA_SET = []
 PATH = os.getcwd()
 PATH = PATH.rstrip("/src")
 PATH = PATH+"/dataset_updated"
-MODEL_FILE = PATH+"/Models/models.txt"
+MODEL_FILE = PATH+"/models_v1/model"
 
 generate_input_vector(INPUT_DATA_SET=INPUT_DATA_SET, OUTPUT_DATA_SET=OUTPUT_DATA_SET,TRAIN_FOLDER_NAME= PATH)
 
@@ -29,14 +29,14 @@ SPLIT_PERCENTAGE = 80
 
 split_Data(INPUT_DATASET=INPUT_DATA_SET, OUTPUT_DATASET=OUTPUT_DATA_SET, TRAIN_INPUT=TRAIN_INPUT, TRAIN_OUTPUT=TRAIN_OUTPUT, TEST_INPUT=TEST_INPUT, TEST_OUTPUT=TEST_OUTPUT, SPLIT_PERCENTAGE=SPLIT_PERCENTAGE)
 
-print "INPUT DATASET :",len(INPUT_DATA_SET)
-print "OUTPUT DATASET :",len(OUTPUT_DATA_SET)
+print("INPUT DATASET :",len(INPUT_DATA_SET))
+print("OUTPUT DATASET :",len(OUTPUT_DATA_SET))
 
-print "Train Input: ", len(TRAIN_INPUT)
-print "Train Output: ", len(TRAIN_OUTPUT)
+print("Train Input: ", len(TRAIN_INPUT))
+print("Train Output: ", len(TRAIN_OUTPUT))
 
-print "TEST Input: ", len(TEST_INPUT)
-print "TEST Output: ", len(TEST_OUTPUT)
+print("TEST Input: ", len(TEST_INPUT))
+print("TEST Output: ", len(TEST_OUTPUT))
 
 
 
@@ -58,7 +58,6 @@ def maxpool2D(x):
 
 
 def conv_neural_network_model(x):
-    print x.shape
     regularization = 0
     weights = {
         'conv1': tf.Variable(tf.random_normal([5,5,1,150])),
@@ -110,11 +109,12 @@ def train_neural_network(x):
 
     hm_epochs = 10
     saver = tf.train.Saver()
-    print "\n\n\nStarting Training"
+    print("\n\n\nStarting Training")
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
         for epoch in range(hm_epochs):
+            print("\n Epoch : ", epoch, " is Starting")
             randomize_Data(TRAIN_INPUT, TRAIN_OUTPUT);
             epoch_loss = 0
             iterations = int(len(TRAIN_INPUT) / batch_size)-1
@@ -122,7 +122,7 @@ def train_neural_network(x):
                 epoch_x, epoch_y = getNextBatch(TRAIN_INPUT,TRAIN_OUTPUT,batch_size,i)
                 sess.run(optimizer, feed_dict={x: epoch_x, y: epoch_y})
                 c = sess.run(cost, feed_dict={x:epoch_x, y:epoch_y})
-                print "\t\titeration  -->",i,"/",iterations,"  cost --> ",c, " total epoch loss --> ", epoch_loss
+                print("\t\titeration  -->",i,"/",iterations,"  cost --> ",c, " total epoch loss --> ", epoch_loss)
                 epoch_loss += c
 
             print('Epoch', epoch, 'completed out of', hm_epochs, 'loss:', epoch_loss)
@@ -134,6 +134,7 @@ def train_neural_network(x):
             train_accuracy = accuracy.eval({x: TRAIN_INPUT, y: TRAIN_OUTPUT})
             print('Training Accuracy: ', train_accuracy )
             print ('Testing Accuracy: ', test_accuracy)
+            print("\n")
 
         saver.save(sess=sess, save_path=MODEL_FILE)
         sess.close()
